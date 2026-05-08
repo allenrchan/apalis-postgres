@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.0.0-rc.8] - 2026-05-08
+
 - feat: idempotency for tasks (#81)
 - chore: make JsonCodec publicly accessible (#79)
 

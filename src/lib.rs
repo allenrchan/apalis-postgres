@@ -111,7 +111,12 @@ impl<Args, Compact, Codec, Fetcher: Clone> Clone
 }
 
 impl PostgresStorage<(), (), ()> {
-    /// Perform migrations for storage
+    /// Perform migrations for storage.
+    ///
+    /// On an existing (pre-`1.0`) database, run the one-time transition documented
+    /// under "Upgrading to 1.0" in the README before calling this — `setup()` no
+    /// longer relocates the migration history automatically. Fresh databases need
+    /// no manual steps.
     #[cfg(feature = "migrate")]
     pub async fn setup(pool: &PgPool) -> Result<(), sqlx::Error> {
         Self::migrations().run(pool).await?;

@@ -220,6 +220,49 @@ async fn main() {
 Track your jobs using [apalis-board](https://github.com/apalis-dev/apalis-board).
 ![Task](https://github.com/apalis-dev/apalis-board/raw/main/screenshots/task.png)
 
+## Upgrading to 1.0
+
+1.0 confines everything apalis creates to the `apalis` schema. Two things move out of `public`:
+
+- The sqlx migrations table is now tracked in `apalis._sqlx_migrations` (configured in `sqlx.toml`) instead of `public._sqlx_migrations`. This also keeps apalis's migration history from colliding with your own sqlx migrations on the same database.
+- `generate_ulid()` is now `apalis.generate_ulid()` and no longer depends on the `pgcrypto` extension — its random bytes come from core `gen_random_uuid()`. The `public.generate_ulid()` copy is dropped.
+
+### Existing databases: one-time manual step
+
+This applies to **every** way of applying migrations — `PostgresStorage::setup()`, sqlx-cli, copied migration files, or a merged `Migrator`. Run this **once per database, before upgrading**:
+
+```sql
+-- Move apalis's existing migration history into the apalis schema.
+ALTER TABLE public._sqlx_migrations SET SCHEMA apalis;
+
+-- The first migration gained `IF NOT EXISTS` (so the apalis schema can be
+-- created before the tracking table on fresh installs). Re-stamp its checksum
+-- so the migrator doesn't reject it as modified:
+UPDATE apalis._sqlx_migrations
+   SET checksum = decode('d0839c6f57a379769dc27ccd581feb3d2709239c8f138e05271c9e3c760c4517a78a4d8912ab3d63b074b28d15ec74e9', 'hex')
+ WHERE version = 20220530084123;
+```
+
+Run it **before** upgrading. If you upgrade first without it, the migrator re-runs the first migration against your existing objects and fails with e.g. `function "notify_new_jobs" already exists`. If you've already hit that failure, an empty `apalis._sqlx_migrations` may have been created, which makes the `ALTER TABLE` above fail because the name is taken — drop it first:
+
+```sql
+DROP TABLE apalis._sqlx_migrations;
+```
+
+then run the two statements above.
+
+If you maintain your **own** `Migrator` (merging in `PostgresStorage::migrations()`), your tracking table stays where it is — skip the `ALTER TABLE` and run only the `UPDATE`, targeting your table name.
+
+Fresh databases need none of this — `sqlx.toml` creates the `apalis` schema and tracking table for you.
+
+### `pgcrypto`
+
+apalis no longer uses `pgcrypto`. An earlier version installed it (usually in `public`); it is left untouched in case something else depends on it. If nothing else needs it, you can remove it:
+
+```sql
+DROP EXTENSION pgcrypto;
+```
+
 ## License
 
 Licensed under either of Apache License, Version 2.0 or MIT license at your option.

@@ -31,7 +31,7 @@ async fn main() {
     }
     let worker = WorkerBuilder::new("rango-tango")
         .backend(backend)
-        .on_event(|ctx, e| {
+        .on_event(|_ctx, e| {
             println!("{e:?}");
         })
         .build(task);

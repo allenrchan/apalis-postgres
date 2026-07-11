@@ -16,12 +16,11 @@ async fn main() {
     let mut start = 0usize;
     let mut items = stream::repeat_with(move || {
         start += 1;
-        let task = Task::builder(start)
+        Task::builder(start)
             .run_after(Duration::from_secs(1))
             .priority(1)
             .max_attempts(5)
-            .build();
-        task
+            .build()
     })
     .take(10);
     backend.push_all(&mut items).await.unwrap();

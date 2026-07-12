@@ -8,6 +8,7 @@
 - bump: upgrade `sqlx` 0.8 → 0.9 (required for `sqlx.toml`); remap the runtime/TLS cargo features since 0.9 removed the combined `runtime-*-tls` flags.
 - **Existing databases need a one-time manual step before upgrading** (fresh databases need nothing — `sqlx.toml` creates the `apalis` schema and tracking table). Move the migration history into the `apalis` schema and re-stamp the one edited migration's checksum — the first migration changed `CREATE SCHEMA` → `CREATE SCHEMA IF NOT EXISTS` so the `apalis` schema can be created before the tracking table on fresh installs. See "Upgrading to 1.0" in the README for the SQL; it applies to every apply path (`setup()`, sqlx-cli, copied migrations, or a merged `Migrator`).
 - note: `pgcrypto` is no longer used by apalis but is left where an earlier version installed it (usually `public`). If nothing else needs it, you can `DROP EXTENSION pgcrypto;`.
+- ci: verify the mutually exclusive `chrono` and `time` SQLx configurations separately instead of combining their incompatible date-time types with `--all-features`.
 
 ## [1.0.0-rc.8] - 2026-05-08
 

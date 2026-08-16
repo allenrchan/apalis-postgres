@@ -148,8 +148,8 @@ def build_manifest() -> dict[str, Any]:
         "frontierAcceptance": {
             "owner": "Frontier Jobs dependency owner",
             "required": [
+                "bash scripts/verify.sh test frontier-jobs",
                 "just it-target frontier-jobs job_queue_storage_integration_test",
-                "just it-target frontier-jobs job_queue_integration_test",
                 "just it-target frontier-jobs worker_task_integration_test",
             ],
         },

@@ -2,7 +2,7 @@
   "content": {
     "releaseTooling": {
       "fileCount": 1,
-      "sha256": "21604e097323ed4ad5c2dc59b11437db2e4e258d509631fe7d521ef13610b51b"
+      "sha256": "2d2d15a2bc5b3d08d24e5b9f5b4d3740e195fc8584b457ba3214da1880ba9739"
     },
     "runtime": {
       "fileCount": 83,
@@ -34,8 +34,8 @@
   "frontierAcceptance": {
     "owner": "Frontier Jobs dependency owner",
     "required": [
+      "bash scripts/verify.sh test frontier-jobs",
       "just it-target frontier-jobs job_queue_storage_integration_test",
-      "just it-target frontier-jobs job_queue_integration_test",
       "just it-target frontier-jobs worker_task_integration_test"
     ]
   },
@@ -63,7 +63,7 @@
       "cargo deny, cargo audit, and cargo vet security review before a changed runtime pin"
     ]
   },
-  "releaseId": "ct11-5bd209cc805d236d",
+  "releaseId": "ct11-654f3a26ce2ba397",
   "rollback": {
     "migrationRule": "forward repair is required after an incompatible queue-schema or migration-ledger change",
     "partialRollbackForbidden": true,

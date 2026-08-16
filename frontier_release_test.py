@@ -50,6 +50,17 @@ class FrontierReleaseTest(unittest.TestCase):
             frontier_release.PREVIOUS_FRONTIER_REVISION,
         )
 
+    def test_frontier_acceptance_names_real_bounded_owners(self) -> None:
+        required = frontier_release.build_manifest()["frontierAcceptance"]["required"]
+        self.assertEqual(
+            required,
+            [
+                "bash scripts/verify.sh test frontier-jobs",
+                "just it-target frontier-jobs job_queue_storage_integration_test",
+                "just it-target frontier-jobs worker_task_integration_test",
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

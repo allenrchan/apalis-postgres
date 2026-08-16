@@ -137,7 +137,7 @@ def build_manifest() -> dict[str, Any]:
         },
         "policy": policy,
         "producerAcceptance": {
-            "mergedPullRequest": "https://github.com/allenrchan/apalis-postgres/pull/1",
+            "mergedPullRequest": "https://github.com/allenrchan/apalis-postgres/pull/2",
             "required": [
                 "stable, beta, and pinned nightly test suites",
                 "default chrono and no-default time feature matrices",

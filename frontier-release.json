@@ -2,7 +2,7 @@
   "content": {
     "releaseTooling": {
       "fileCount": 1,
-      "sha256": "2d2d15a2bc5b3d08d24e5b9f5b4d3740e195fc8584b457ba3214da1880ba9739"
+      "sha256": "98919c7164b27b9e3bc6379cf7b63745fe8a0c8e4cbc4b0221acaf1e73913bd9"
     },
     "runtime": {
       "fileCount": 83,
@@ -55,7 +55,7 @@
     "updateCadence": "review upstream main and security advisories at least monthly and before every pin change"
   },
   "producerAcceptance": {
-    "mergedPullRequest": "https://github.com/allenrchan/apalis-postgres/pull/1",
+    "mergedPullRequest": "https://github.com/allenrchan/apalis-postgres/pull/2",
     "required": [
       "stable, beta, and pinned nightly test suites",
       "default chrono and no-default time feature matrices",
@@ -63,7 +63,7 @@
       "cargo deny, cargo audit, and cargo vet security review before a changed runtime pin"
     ]
   },
-  "releaseId": "ct11-654f3a26ce2ba397",
+  "releaseId": "ct11-08dbb172b1fef11e",
   "rollback": {
     "migrationRule": "forward repair is required after an incompatible queue-schema or migration-ledger change",
     "partialRollbackForbidden": true,

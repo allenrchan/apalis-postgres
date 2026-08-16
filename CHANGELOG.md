@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- fix: bind the CT-11 producer acceptance record to the release-governance pull request.
 - chore: add a content-bound Frontier CT-11 fork release identity, ownership policy, and deterministic CI validation.
 - fix: confine apalis's objects to the `apalis` schema (#86):
   - `generate_ulid` is now `apalis.generate_ulid` and no longer depends on `pgcrypto` — its random bytes come from core `gen_random_uuid()`. The sole caller (`apalis.push_job`) is repointed and the `public.generate_ulid` copy is dropped (via a new forward migration; existing migrations are not rewritten).

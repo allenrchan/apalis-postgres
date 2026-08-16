@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- chore: add a content-bound Frontier CT-11 fork release identity, ownership policy, and deterministic CI validation.
 - fix: confine apalis's objects to the `apalis` schema (#86):
   - `generate_ulid` is now `apalis.generate_ulid` and no longer depends on `pgcrypto` — its random bytes come from core `gen_random_uuid()`. The sole caller (`apalis.push_job`) is repointed and the `public.generate_ulid` copy is dropped (via a new forward migration; existing migrations are not rewritten).
   - The sqlx migrations table is tracked in `apalis._sqlx_migrations` instead of `public._sqlx_migrations` (configured in a new `sqlx.toml`). This also isolates apalis's migration history from a user's own sqlx migrations on the same database, which previously collided over the shared default table name.

@@ -1,0 +1,80 @@
+{
+  "content": {
+    "releaseTooling": {
+      "fileCount": 1,
+      "sha256": "21604e097323ed4ad5c2dc59b11437db2e4e258d509631fe7d521ef13610b51b"
+    },
+    "runtime": {
+      "fileCount": 83,
+      "sha256": "6121fcb6b15aef18ac66ef18954c898780a92324bdf8f8d8f3ac224db877c14e"
+    }
+  },
+  "contractId": "CT-11",
+  "fork": {
+    "carriedPatchCommits": [
+      {
+        "purpose": "Test mutually exclusive chrono and time SQLx feature configurations independently.",
+        "revision": "5238bfacb64998290b12a114052f878748caf805"
+      },
+      {
+        "purpose": "Record the verified SQLx feature matrix in the changelog.",
+        "revision": "00bc2d691ab0eefe7df1cca44cf7d6aaaba0c68b"
+      }
+    ],
+    "carriedPatchFiles": [
+      ".github/workflows/ci.yml",
+      "CHANGELOG.md",
+      "examples/basic.rs",
+      "examples/unique_jobs.rs"
+    ],
+    "carriedRuntimePatch": false,
+    "previousFrontierRevision": "00bc2d691ab0eefe7df1cca44cf7d6aaaba0c68b",
+    "repository": "https://github.com/allenrchan/apalis-postgres.git"
+  },
+  "frontierAcceptance": {
+    "owner": "Frontier Jobs dependency owner",
+    "required": [
+      "just it-target frontier-jobs job_queue_storage_integration_test",
+      "just it-target frontier-jobs job_queue_integration_test",
+      "just it-target frontier-jobs worker_task_integration_test"
+    ]
+  },
+  "package": {
+    "distribution": "immutable-git-revision-only",
+    "name": "apalis-postgres",
+    "registryPublishAllowed": false,
+    "version": "1.0.0-rc.8"
+  },
+  "policy": {
+    "kind": "third-party-infrastructure-fork",
+    "owner": "Frontier Jobs dependency owner",
+    "rebaseRule": "rebase only onto a reviewed immutable upstream revision and re-run producer plus Frontier consumer acceptance",
+    "retirementTrigger": "upstream publishes the SQLx 0.9 adapter and the complete Frontier queue migration/storage/worker acceptance passes",
+    "runtimeExpansionProhibited": true,
+    "securityResponse": "classify exposure immediately; pin away from a compromised revision or publish a reviewed fork repair under the incident SLA",
+    "updateCadence": "review upstream main and security advisories at least monthly and before every pin change"
+  },
+  "producerAcceptance": {
+    "mergedPullRequest": "https://github.com/allenrchan/apalis-postgres/pull/1",
+    "required": [
+      "stable, beta, and pinned nightly test suites",
+      "default chrono and no-default time feature matrices",
+      "Rustfmt, Clippy, documentation, coverage, and unused-dependency checks",
+      "cargo deny, cargo audit, and cargo vet security review before a changed runtime pin"
+    ]
+  },
+  "releaseId": "ct11-5bd209cc805d236d",
+  "rollback": {
+    "migrationRule": "forward repair is required after an incompatible queue-schema or migration-ledger change",
+    "partialRollbackForbidden": true,
+    "previousKnownGoodRevision": "00bc2d691ab0eefe7df1cca44cf7d6aaaba0c68b"
+  },
+  "schemaVersion": 1,
+  "status": "governed-retain",
+  "upstream": {
+    "baseRevision": "b6983a1822abb61937e313d0f0013c15662d1f93",
+    "repository": "https://github.com/apalis-dev/apalis-postgres.git",
+    "runtimeContentSha256": "6121fcb6b15aef18ac66ef18954c898780a92324bdf8f8d8f3ac224db877c14e",
+    "runtimeEquivalent": true
+  }
+}

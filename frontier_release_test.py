@@ -61,6 +61,14 @@ class FrontierReleaseTest(unittest.TestCase):
             ],
         )
 
+    def test_producer_acceptance_names_the_governance_pull_request(self) -> None:
+        acceptance = frontier_release.build_manifest()["producerAcceptance"]
+
+        self.assertEqual(
+            acceptance["mergedPullRequest"],
+            "https://github.com/allenrchan/apalis-postgres/pull/2",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

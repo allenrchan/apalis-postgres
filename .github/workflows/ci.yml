@@ -13,6 +13,20 @@ env:
   SQLX_OFFLINE: true
 
 jobs:
+  frontier-release:
+    name: Frontier Release Governance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Validate CT-11 release identity
+        run: |
+          python3 frontier_release_test.py
+          python3 frontier_release.py validate
+
   test:
     name: Test Suite
     runs-on: ${{ matrix.os }}

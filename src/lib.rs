@@ -24,6 +24,7 @@ use ulid::Ulid;
 
 pub use crate::{
     ack::{LockTaskLayer, PgAck},
+    consumer_event::{ConsumerEvent, ConsumerTransport},
     fetcher::{PgFetcher, PgPollFetcher},
     queries::{
         keep_alive::{initial_heartbeat, keep_alive_stream},
@@ -33,6 +34,7 @@ pub use crate::{
 };
 
 mod ack;
+mod consumer_event;
 mod fetcher;
 mod from_row;
 
@@ -270,6 +272,7 @@ where
     Args: Send + 'static + Unpin,
 {
     fn poll_basic(&self, worker: &WorkerContext) -> TaskStream<PgTask<CompactType>, sqlx::Error> {
+        ConsumerEvent::Enrolled(ConsumerTransport::Polling).emit(worker);
         let register_worker = initial_heartbeat(
             self.pool.clone(),
             self.config.clone(),
@@ -368,14 +371,17 @@ impl<Args, Decode> PostgresStorage<Args, CompactType, Decode, PgNotify> {
         &self,
         worker: &WorkerContext,
     ) -> TaskStream<PgTask<CompactType>, sqlx::Error> {
+        ConsumerEvent::Enrolled(ConsumerTransport::Notify).emit(worker);
         let pool = self.pool.clone();
         let worker_id = worker.name().to_owned();
         let namespace = self.config.queue().to_string();
+        let listener_worker = worker.clone();
         let listener = async move {
             let mut fetcher = PgListener::connect_with(&pool)
                 .await
                 .expect("Failed to create listener");
             fetcher.listen("apalis::job::insert").await.unwrap();
+            ConsumerEvent::NotifyReady.emit(&listener_worker);
             fetcher
         };
         let fetcher = stream::once(listener).flat_map(|f| f.into_stream());

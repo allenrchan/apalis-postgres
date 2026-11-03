@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: expose payload-free native PostgreSQL consumer enrollment, successful empty fetches, and LISTEN completion through the owning worker event listener; govern the exact lifecycle-observation runtime patch with source-bound CT-11 declarations.
 - fix: bind the CT-11 producer acceptance record to the release-governance pull request.
 - chore: add a content-bound Frontier CT-11 fork release identity, ownership policy, and deterministic CI validation.
 - fix: confine apalis's objects to the `apalis` schema (#86):

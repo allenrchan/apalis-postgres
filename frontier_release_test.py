@@ -5,10 +5,13 @@ from __future__ import annotations
 import copy
 import json
 from pathlib import Path
+import re
+import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 
 import frontier_release
@@ -224,6 +227,78 @@ class RuntimePatchCliTest(unittest.TestCase):
         result = self.cli("validate")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("does not match current governed content", result.stdout)
+
+
+def feature_matrix(workflow):
+    lines = workflow.read_text().splitlines()
+    for index, line in enumerate(lines):
+        if line.strip() != "feature_args:":
+            continue
+        indentation = len(line) - len(line.lstrip())
+        values = []
+        for item in lines[index + 1:]:
+            if not item.strip():
+                continue
+            if len(item) - len(item.lstrip()) <= indentation:
+                break
+            if not item.strip().startswith("- "):
+                raise AssertionError("feature_args must remain an explicit scalar matrix")
+            values.append(json.loads(item.strip()[2:]))
+        return values
+    return [""]
+
+
+class CoverageWorkflowTest(unittest.TestCase):
+    """Evaluate the actual rendered coverage command against the supported CI inputs."""
+    def commands(self):
+        workflow = frontier_release.ROOT / ".github/workflows/coverage.yml"
+        commands = re.findall(r"^\s+run: (cargo tarpaulin[^\n]+)$", workflow.read_text(), re.MULTILINE)
+        self.assertEqual(len(commands), 1, "coverage must retain one explicit execution command")
+        return [shlex.split(commands[0].replace("${{ matrix.feature_args }}", arguments))
+                for arguments in feature_matrix(workflow)]
+
+    def selectors(self, command):
+        selected = []
+        for index, value in enumerate(command):
+            if value in ("--all-features", "--no-default-features"):
+                selected.append(value)
+            if value == "--features":
+                selected.extend([value, command[index + 1]])
+        return selected
+
+    def enabled_features(self, command):
+        features = tomllib.loads((frontier_release.ROOT / "Cargo.toml").read_text())["features"]
+        selected = self.selectors(command)
+        enabled = set(features if "--all-features" in selected else
+                      [] if "--no-default-features" in selected else features["default"])
+        if "--features" in selected:
+            enabled.update(selected[selected.index("--features") + 1].split(","))
+        return enabled
+
+    def test_coverage_never_combines_separately_qualified_datetime_configurations(self):
+        for command in self.commands():
+            enabled = self.enabled_features(command)
+            self.assertFalse({"chrono", "time"} <= enabled,
+                             "coverage must use the separately qualified SQLx datetime configurations")
+
+    def test_coverage_sqlx_native_tests_select_tokio_without_async_std(self):
+        for command in self.commands():
+            enabled = self.enabled_features(command)
+            self.assertIn("tokio-comp", enabled)
+            self.assertFalse(any(value.startswith("async-std-comp") for value in enabled),
+                             "mixed runtime selection runs SQLx tests outside their required Tokio reactor")
+
+    def test_coverage_uses_the_existing_supported_ci_feature_matrix(self):
+        ci = frontier_release.ROOT / ".github/workflows/ci.yml"
+        expected = [shlex.split(arguments) for arguments in feature_matrix(ci)]
+        self.assertCountEqual([self.selectors(command) for command in self.commands()], expected)
+
+    def test_coverage_retains_real_workspace_native_tests_and_existing_timeout(self):
+        for command in self.commands():
+            self.assertIn("--workspace", command)
+            self.assertEqual(command[command.index("--timeout") + 1], "120")
+            self.assertEqual(command[command.index("--") + 1:], ["--test-threads=1"])
+            self.assertFalse({"--lib", "--skip", "--ignore-tests", "--exclude"} & set(command))
 
 
 if __name__ == "__main__":

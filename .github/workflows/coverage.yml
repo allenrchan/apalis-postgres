@@ -14,8 +14,13 @@ env:
 
 jobs:
   coverage:
-    name: Code Coverage
+    name: Code Coverage (${{ matrix.feature_args || 'default chrono' }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        feature_args:
+          - ""
+          - "--no-default-features --features migrate,tokio-comp,time"
     services:
       postgres:
         image: postgres:17
@@ -60,11 +65,11 @@ jobs:
         run: sqlx migrate run
 
       - name: Generate code coverage
-        run: cargo tarpaulin --all-features --verbose --workspace --timeout 120 --out xml -- --test-threads=1
+        run: cargo tarpaulin ${{ matrix.feature_args }} --verbose --workspace --timeout 120 --out xml -- --test-threads=1
 
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v6
         with:
-          file: cobertura.xml
+          files: cobertura.xml
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}

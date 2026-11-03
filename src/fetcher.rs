@@ -14,7 +14,7 @@ use pin_project::pin_project;
 use sqlx::{PgPool, Pool, Postgres};
 use ulid::Ulid;
 
-use crate::{CompactType, Config, PgContext, PgTask, from_row::PgTaskRow};
+use crate::{CompactType, Config, ConsumerEvent, PgContext, PgTask, from_row::PgTaskRow};
 
 async fn fetch_next(
     pool: PgPool,
@@ -115,6 +115,7 @@ impl Stream for PgPollFetcher<CompactType> {
                     Poll::Pending => return Poll::Pending,
                     Poll::Ready(item) => match item {
                         Ok(requests) => {
+                            ConsumerEvent::FetchReady.emit(&this.wrk);
                             if requests.is_empty() {
                                 let next = this.next_backoff(this.current_backoff);
                                 this.current_backoff = next;

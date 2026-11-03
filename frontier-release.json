@@ -2,11 +2,11 @@
   "content": {
     "releaseTooling": {
       "fileCount": 1,
-      "sha256": "98919c7164b27b9e3bc6379cf7b63745fe8a0c8e4cbc4b0221acaf1e73913bd9"
+      "sha256": "d9034302ada758b7aaac36046a005c4bf7a888feb3561403257cd19932cf5ce9"
     },
     "runtime": {
-      "fileCount": 83,
-      "sha256": "6121fcb6b15aef18ac66ef18954c898780a92324bdf8f8d8f3ac224db877c14e"
+      "fileCount": 84,
+      "sha256": "0299ad0eb4d2c1f9a0c5ed78f52de87b6c7bde6268b0c26dd2a50dd1000ea70c"
     }
   },
   "contractId": "CT-11",
@@ -27,9 +27,44 @@
       "examples/basic.rs",
       "examples/unique_jobs.rs"
     ],
-    "carriedRuntimePatch": false,
+    "carriedRuntimePatch": true,
     "previousFrontierRevision": "00bc2d691ab0eefe7df1cca44cf7d6aaaba0c68b",
-    "repository": "https://github.com/allenrchan/apalis-postgres.git"
+    "repository": "https://github.com/allenrchan/apalis-postgres.git",
+    "runtimePatch": {
+      "baseRevision": "1f28de216b7da33f1389a941c0e08b17c76c5cbd",
+      "contentSha256": "cacc24b4b5ea576bd2e7f3f987d035668966407c3d3ab3d9cbdf2e1cff82e138",
+      "files": {
+        "src/consumer_event.rs": {
+          "after": {
+            "mode": "100644",
+            "sha256": "56e29cedd0656422611532f836369d12b52b3f2eedd410335209722af558a9ab"
+          },
+          "before": null
+        },
+        "src/fetcher.rs": {
+          "after": {
+            "mode": "100644",
+            "sha256": "9fcabc5d1a83e03cd8ac5d80e94e362581784feafbb14dd41c27abd849c7c080"
+          },
+          "before": {
+            "mode": "100644",
+            "sha256": "e96bdfc99f4d34a16c5b3a6d2ee43113fc783db50db936375cb2f4b841ad41d8"
+          }
+        },
+        "src/lib.rs": {
+          "after": {
+            "mode": "100644",
+            "sha256": "34ff551e79f038f929397ae3ab133fc0ca8903ec353912359f412e4dc71f7357"
+          },
+          "before": {
+            "mode": "100644",
+            "sha256": "63c2bffd5cfb5e61ecdf811a40c3cc1d7989cfb6bf95bcc2c190eb16b88f3666"
+          }
+        }
+      },
+      "kind": "process-local-consumer-lifecycle-observation",
+      "schemaVersion": 1
+    }
   },
   "frontierAcceptance": {
     "owner": "Frontier Jobs dependency owner",
@@ -51,6 +86,7 @@
     "rebaseRule": "rebase only onto a reviewed immutable upstream revision and re-run producer plus Frontier consumer acceptance",
     "retirementTrigger": "upstream publishes the SQLx 0.9 adapter and the complete Frontier queue migration/storage/worker acceptance passes",
     "runtimeExpansionProhibited": true,
+    "runtimePatchRule": "Only an explicit exact-source lifecycle-observation declaration is permitted; queue SQL, schema, claim, acknowledgement, credential and handler semantics remain outside its scope.",
     "securityResponse": "classify exposure immediately; pin away from a compromised revision or publish a reviewed fork repair under the incident SLA",
     "updateCadence": "review upstream main and security advisories at least monthly and before every pin change"
   },
@@ -63,7 +99,7 @@
       "cargo deny, cargo audit, and cargo vet security review before a changed runtime pin"
     ]
   },
-  "releaseId": "ct11-08dbb172b1fef11e",
+  "releaseId": "ct11-f491c9d4f0a6229f",
   "rollback": {
     "migrationRule": "forward repair is required after an incompatible queue-schema or migration-ledger change",
     "partialRollbackForbidden": true,
@@ -75,6 +111,6 @@
     "baseRevision": "b6983a1822abb61937e313d0f0013c15662d1f93",
     "repository": "https://github.com/apalis-dev/apalis-postgres.git",
     "runtimeContentSha256": "6121fcb6b15aef18ac66ef18954c898780a92324bdf8f8d8f3ac224db877c14e",
-    "runtimeEquivalent": true
+    "runtimeEquivalent": false
   }
 }
